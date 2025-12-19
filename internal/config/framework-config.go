@@ -71,26 +71,25 @@ func connectToMySQL(cfg *frameworkdto.FrameworkConfig) *gorm.DB {
 }
 
 func connectToPostgreSQL(cfg *frameworkdto.FrameworkConfig) *gorm.DB {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s",
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable",
 		cfg.DbCfg.Host,
 		cfg.DbCfg.Port,
 		cfg.DbCfg.Username,
-		cfg.DbCfg.Password,
-		cfg.DbCfg.SSLMode)
+		cfg.DbCfg.Password)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
 	var exists bool
-	err = db.Exec("SELECT 1 FROM pg_database WHERE datname = ?", cfg.DbCfg.Database).Scan(&exists).Error
-	if err != nil {
+	query := `SELECT EXISTS (SELECT 1 FROM pg_database WHERE datname = ?)`
+	if err := db.Raw(query, cfg.DbCfg.Database).Scan(&exists).Error; err != nil {
 		panic(err)
 	}
 
 	if !exists {
-		err = db.Exec("CREATE DATABASE ?", cfg.DbCfg.Database).Error
-		if err != nil {
+		query = `CREATE DATABASE ` + cfg.DbCfg.Database
+		if err := db.Exec(query).Error; err != nil {
 			panic(err)
 		}
 	}
