@@ -2,7 +2,7 @@ package frameworkdto
 
 type TokenDTO struct {
 	Sub       string   `json:"sub"`
-	TenantID  uint     `json:"company_id"`
+	TenantID  uint     `json:"tenant_id"`
 	Email     string   `json:"email"`
 	FirstName string   `json:"first_name"`
 	LastName  string   `json:"last_name"`

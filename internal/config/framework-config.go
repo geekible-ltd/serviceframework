@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	frameworkdto "github.com/geekible-ltd/serviceframework/framework-dto"
+	"github.com/geekible-ltd/serviceframework/internal/entities"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -26,6 +27,11 @@ func NewFrameworkConfig(cfg *frameworkdto.FrameworkConfig) *FrameworkConfigurati
 		fc.db = connectToPostgreSQL(cfg)
 	case frameworkdto.DatabaseTypeSQLite:
 		fc.db = connectToSQLite(cfg)
+	}
+
+	err := fc.db.AutoMigrate(&entities.Tenant{}, &entities.User{}, &entities.TenantLicence{})
+	if err != nil {
+		panic(err)
 	}
 
 	fc.router = buildGinEngine()
