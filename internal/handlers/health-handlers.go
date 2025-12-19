@@ -10,15 +10,13 @@ import (
 type HealthHandlers struct {
 }
 
-func NewHealthHandlers(router *gin.Engine) *HealthHandlers {
+func NewHealthHandlers() *HealthHandlers {
 	return &HealthHandlers{}
 }
 
-func (h *HealthHandlers) RegisterRoutes(router *gin.Engine) *gin.Engine {
+func (h *HealthHandlers) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	api.GET("/health", h.GetHealth)
-
-	return router
 }
 
 func (h *HealthHandlers) GetHealth(c *gin.Context) {

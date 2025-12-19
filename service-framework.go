@@ -44,7 +44,7 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 		s.router.Use(gin.Logger())
 	}
 
-	handlers.NewHealthHandlers(s.router)
+	handlers.NewHealthHandlers().RegisterRoutes(s.router)
 
 	return s.router
 }
