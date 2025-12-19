@@ -3,6 +3,7 @@ package serviceframework
 import (
 	frameworkdto "github.com/geekible-ltd/serviceframework/framework-dto"
 	"github.com/geekible-ltd/serviceframework/internal/config"
+	"github.com/geekible-ltd/serviceframework/internal/handlers"
 	"github.com/geekible-ltd/serviceframework/internal/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -20,9 +21,10 @@ func NewServiceFramework(cfg *frameworkdto.FrameworkConfig) *ServiceFramework {
 	gormDb := fc.GetDatabase()
 
 	return &ServiceFramework{
-		cfg: cfg,
-		fc:  fc,
-		db:  gormDb,
+		cfg:    cfg,
+		fc:     fc,
+		db:     gormDb,
+		router: fc.GetRouter(),
 	}
 }
 
@@ -41,6 +43,8 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 	if s.cfg.Environment == frameworkdto.EnvDev {
 		s.router.Use(gin.Logger())
 	}
+
+	handlers.NewHealthHandlers().RegisterRoutes(s.router)
 
 	return s.router
 }
