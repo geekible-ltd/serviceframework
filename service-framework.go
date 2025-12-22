@@ -56,12 +56,14 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 	// Register Services
 	loginService := services.NewLoginService(s.cfg, userRepo, tenantRepo)
 	registrationService := services.NewUserRegistrationService(userRepo, tenantRepo, tenantLicenceRepo)
+	tenantService := services.NewTenantService(tenantRepo)
 	userMaintenanceService := services.NewUserMaintenanceService(userRepo)
 
 	// Register login handlers
 	handlers.NewLoginHandlers(loginService).RegisterRoutes(s.router)
 	handlers.NewRegistrationHandlers(s.cfg.JWTSecret, registrationService).RegisterRoutes(s.router)
 	handlers.NewUserMaintenanceHandler(s.cfg.JWTSecret, userMaintenanceService).RegisterRoutes(s.router)
+	handlers.NewTenantHandler(s.cfg.JWTSecret, tenantService).RegisterRoutes(s.router)
 
 	return s.router
 }
