@@ -42,15 +42,30 @@ func ParseJWT(tokenString string, jwtSecret []byte) (frameworkdto.TokenDTO, erro
 		return frameworkdto.TokenDTO{}, errors.New("invalid claims")
 	}
 
-	sub, ok := claims["sub"].(string)
+	// JWT claims store numbers as float64, need to convert properly
+	subRaw, ok := claims["sub"]
 	if !ok {
 		return frameworkdto.TokenDTO{}, errors.New("sub claim missing or invalid")
 	}
+	var sub string
+	switch v := subRaw.(type) {
+	case string:
+		sub = v
+	case float64:
+		sub = fmt.Sprintf("%.0f", v)
+	default:
+		return frameworkdto.TokenDTO{}, errors.New("sub claim invalid type")
+	}
 
-	tenantID, ok := claims["tenant_id"].(uint)
+	tenantIDRaw, ok := claims["tenant_id"]
 	if !ok {
 		return frameworkdto.TokenDTO{}, errors.New("tenant_id claim missing or invalid")
 	}
+	tenantIDFloat, ok := tenantIDRaw.(float64)
+	if !ok {
+		return frameworkdto.TokenDTO{}, errors.New("tenant_id claim invalid type")
+	}
+	tenantID := uint(tenantIDFloat)
 
 	email, ok := claims["email"].(string)
 	if !ok {
@@ -67,9 +82,13 @@ func ParseJWT(tokenString string, jwtSecret []byte) (frameworkdto.TokenDTO, erro
 		return frameworkdto.TokenDTO{}, errors.New("last_name claim missing or invalid")
 	}
 
-	role, ok := claims["role"].(frameworkdto.UserRole)
+	roleRaw, ok := claims["role"]
 	if !ok {
 		return frameworkdto.TokenDTO{}, errors.New("role claim missing or invalid")
+	}
+	role, ok := roleRaw.(string)
+	if !ok {
+		return frameworkdto.TokenDTO{}, errors.New("role claim invalid type")
 	}
 
 	expFloat, ok := claims["exp"].(float64)

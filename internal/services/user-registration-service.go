@@ -93,12 +93,12 @@ func (s *UserRegistrationService) RegisterTenant(tenantDTO frameworkdto.TenantRe
 }
 
 func (s *UserRegistrationService) RegisterUser(tenantId uint, userDTO frameworkdto.UserRegistrationDTO) error {
-	emailDomain := strings.Split(userDTO.Email, "@")[1]
-	_, err := s.userRepo.GetByEmailDomain(emailDomain)
+	_, err := s.userRepo.GetByEmail(userDTO.Email)
 
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return frameworkconstants.ErrUserAlreadyExists
-	} else if err != nil {
+	if err == nil {
+		return frameworkconstants.ErrTenantAlreadyExists
+	}
+	if err != gorm.ErrRecordNotFound {
 		return err
 	}
 
@@ -159,8 +159,7 @@ func (s *UserRegistrationService) DeleteUser(tenantId uint, userId uint) error {
 		return err
 	}
 
-	user.IsActive = false
-	user.UpdatedAt = time.Now()
+	s.userRepo.Delete(user)
 
 	tenantLicence, err := s.tenantLicenceRepo.GetByTenantID(tenantId)
 	if err != nil && err == gorm.ErrRecordNotFound {

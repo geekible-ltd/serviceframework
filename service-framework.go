@@ -59,7 +59,7 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 
 	// Register login handlers
 	handlers.NewLoginHandlers(loginService).RegisterRoutes(s.router)
-	handlers.NewRegistrationHandlers(registrationService).RegisterRoutes(s.router)
+	handlers.NewRegistrationHandlers(s.cfg.JWTSecret, registrationService).RegisterRoutes(s.router)
 
 	return s.router
 }

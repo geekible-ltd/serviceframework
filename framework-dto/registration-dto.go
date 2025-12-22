@@ -14,7 +14,6 @@ type TenantRegistrationDTO struct {
 }
 
 type UserRegistrationDTO struct {
-	TenantID  uint   `json:"tenant_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`

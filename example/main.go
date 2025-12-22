@@ -12,7 +12,7 @@ import (
 func main() {
 	cfg := frameworkdto.FrameworkConfig{
 		Environment: frameworkdto.EnvDev,
-		JWTSecret:   "sjkskjd8fkjnd89w3rmnasdiofsdfsadf",
+		JWTSecret:   "f1ca366699626bb7ee96d802b7b0df8971307b689a81cc79ff1f4ce07d60efad",
 		DBType:      frameworkdto.DatabaseTypePostgreSQL,
 		DbCfg: frameworkdto.DatabaseConfig{
 			Host:     "localhost",
