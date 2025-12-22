@@ -34,4 +34,5 @@ var (
 	ErrTenantLicenceExceeded       = errors.New("tenant licence exceeded")
 	ErrTenantLicenceExpired        = errors.New("tenant licence expired")
 	ErrFailedToCreateTenantLicence = errors.New("failed to create tenant licence")
+	ErrLicenceTypeAlreadyExists    = errors.New("licence type already exists")
 )

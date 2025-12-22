@@ -17,16 +17,19 @@ type UserRegistrationService struct {
 	userRepo          *repositories.UserRepository
 	tenantRepo        *repositories.TenantRepository
 	tenantLicenceRepo *repositories.TenantLicenceRepository
+	licenceTypeRepo   *repositories.LicenceTypeRepository
 }
 
 func NewUserRegistrationService(
 	userRepo *repositories.UserRepository,
 	tenantRepo *repositories.TenantRepository,
-	tenantLicenceRepo *repositories.TenantLicenceRepository) *UserRegistrationService {
+	tenantLicenceRepo *repositories.TenantLicenceRepository,
+	licenceTypeRepo *repositories.LicenceTypeRepository) *UserRegistrationService {
 	return &UserRegistrationService{
 		userRepo:          userRepo,
 		tenantRepo:        tenantRepo,
-		tenantLicenceRepo: tenantLicenceRepo}
+		tenantLicenceRepo: tenantLicenceRepo,
+		licenceTypeRepo:   licenceTypeRepo}
 }
 
 func (s *UserRegistrationService) RegisterTenant(tenantDTO frameworkdto.TenantRegistrationDTO) error {
@@ -55,8 +58,7 @@ func (s *UserRegistrationService) RegisterTenant(tenantDTO frameworkdto.TenantRe
 	tenantLicence := entities.TenantLicence{
 		TenantID:      tenant.ID,
 		LicenceKey:    uuid.New().String(),
-		LicencedSeats: 5,
-		UsedSeats:     1,
+		LicenceTypeID: tenantDTO.LicenceTypeID,
 		ExpiryDate:    nil,
 	}
 	if err := s.tenantLicenceRepo.Create(&tenantLicence); err != nil {
@@ -109,7 +111,12 @@ func (s *UserRegistrationService) RegisterUser(tenantId uint, userDTO frameworkd
 		return err
 	}
 
-	if tenantLicence.UsedSeats >= tenantLicence.LicencedSeats {
+	licenceType, err := s.licenceTypeRepo.GetByID(tenantLicence.LicenceTypeID)
+	if err != nil {
+		return err
+	}
+
+	if tenantLicence.UsedSeats >= licenceType.MaxSeats {
 		return frameworkconstants.ErrTenantLicenceExceeded
 	}
 

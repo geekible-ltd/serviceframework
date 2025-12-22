@@ -52,10 +52,11 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 	userRepo := repositories.NewUserRepository(s.db)
 	tenantRepo := repositories.NewTenantRepository(s.db)
 	tenantLicenceRepo := repositories.NewTenantLicenceRepository(s.db)
+	licenceTypeRepo := repositories.NewLicenceTypeRepository(s.db)
 
 	// Register Services
 	loginService := services.NewLoginService(s.cfg, userRepo, tenantRepo)
-	registrationService := services.NewUserRegistrationService(userRepo, tenantRepo, tenantLicenceRepo)
+	registrationService := services.NewUserRegistrationService(userRepo, tenantRepo, tenantLicenceRepo, licenceTypeRepo)
 	tenantService := services.NewTenantService(tenantRepo)
 	userMaintenanceService := services.NewUserMaintenanceService(userRepo)
 
