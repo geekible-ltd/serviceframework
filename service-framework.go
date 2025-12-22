@@ -5,6 +5,8 @@ import (
 	"github.com/geekible-ltd/serviceframework/internal/config"
 	"github.com/geekible-ltd/serviceframework/internal/handlers"
 	"github.com/geekible-ltd/serviceframework/internal/middleware"
+	"github.com/geekible-ltd/serviceframework/internal/repositories"
+	"github.com/geekible-ltd/serviceframework/internal/services"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -45,6 +47,17 @@ func (s *ServiceFramework) GetRouter(requestPerSecond, burst int) *gin.Engine {
 	}
 
 	handlers.NewHealthHandlers().RegisterRoutes(s.router)
+
+	// Register Repos
+	userRepo := repositories.NewUserRepository(s.db)
+	tenantRepo := repositories.NewTenantRepository(s.db)
+	//tenantLicenceRepo := repositories.NewTenantLicenceRepository(s.db)
+
+	// Register Services
+	loginService := services.NewLoginService(s.cfg, userRepo, tenantRepo)
+
+	// Register login handlers
+	handlers.NewLoginHandlers(loginService).RegisterRoutes(s.router)
 
 	return s.router
 }
