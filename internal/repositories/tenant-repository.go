@@ -13,8 +13,8 @@ func NewTenantRepository(db *gorm.DB) *TenantRepository {
 	return &TenantRepository{db: db}
 }
 
-func (r *TenantRepository) Create(tenant entities.Tenant) error {
-	return r.db.Create(&tenant).Error
+func (r *TenantRepository) Create(tenant *entities.Tenant) error {
+	return r.db.Create(tenant).Error
 }
 
 func (r *TenantRepository) GetByID(tenantId uint) (*entities.Tenant, error) {
@@ -25,12 +25,12 @@ func (r *TenantRepository) GetByID(tenantId uint) (*entities.Tenant, error) {
 	return &tenant, nil
 }
 
-func (r *TenantRepository) Update(tenant entities.Tenant) error {
-	return r.db.Save(&tenant).Error
+func (r *TenantRepository) Update(tenant *entities.Tenant) error {
+	return r.db.Save(tenant).Error
 }
 
-func (r *TenantRepository) Delete(tenant entities.Tenant) error {
-	return r.db.Delete(&tenant).Error
+func (r *TenantRepository) Delete(tenant *entities.Tenant) error {
+	return r.db.Delete(tenant).Error
 }
 
 func (r *TenantRepository) GetAll() ([]entities.Tenant, error) {

@@ -13,24 +13,24 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) Create(user entities.User) error {
+func (r *UserRepository) Create(user *entities.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *UserRepository) GetByID(userId, tenantId uint) (entities.User, error) {
+func (r *UserRepository) GetByID(userId, tenantId uint) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.First(&user, "user_id = ? AND tenant_id = ?", userId, tenantId).Error; err != nil {
-		return entities.User{}, err
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
-func (r *UserRepository) Update(user entities.User) error {
-	return r.db.Save(&user).Error
+func (r *UserRepository) Update(user *entities.User) error {
+	return r.db.Save(user).Error
 }
 
-func (r *UserRepository) Delete(user entities.User) error {
-	return r.db.Delete(&user).Error
+func (r *UserRepository) Delete(user *entities.User) error {
+	return r.db.Delete(user).Error
 }
 
 func (r *UserRepository) GetAll(tenantId uint) ([]entities.User, error) {
@@ -49,18 +49,18 @@ func (r *UserRepository) GetAllWithTenant(tenantId uint) ([]entities.User, error
 	return users, nil
 }
 
-func (r *UserRepository) GetByEmailDomain(emailDomain string) (entities.User, error) {
+func (r *UserRepository) GetByEmailDomain(emailDomain string) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.Where("email LIKE ?", "%"+emailDomain).First(&user).Error; err != nil {
-		return entities.User{}, err
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
-func (r *UserRepository) GetByEmail(email string) (entities.User, error) {
+func (r *UserRepository) GetByEmail(email string) (*entities.User, error) {
 	var user entities.User
 	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
-		return entities.User{}, err
+		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }

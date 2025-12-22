@@ -1,9 +1,13 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
-	ID                              uint       `json:"id"`
+	gorm.Model
 	TenantID                        uint       `json:"tenant_id"`
 	FirstName                       string     `json:"first_name"`
 	LastName                        string     `json:"last_name"`
@@ -19,9 +23,6 @@ type User struct {
 	IsEmailVerified                 bool       `json:"is_email_verified"`
 	EmailVerificationToken          string     `json:"email_verification_token"`
 	EmailVerificationTokenExpiresAt *time.Time `json:"email_verification_token_expires_at"`
-	CreatedAt                       time.Time  `json:"created_at"`
-	UpdatedAt                       time.Time  `json:"updated_at"`
-	DeletedAt                       *time.Time `json:"deleted_at"`
 
 	Tenant Tenant `json:"tenant" gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 }
