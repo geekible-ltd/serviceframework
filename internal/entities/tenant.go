@@ -13,5 +13,5 @@ type Tenant struct {
 	IsActive bool   `json:"is_active"`
 
 	Users         []User         `json:"users" gorm:"foreignKey:TenantID"`
-	TenantLicence *TenantLicence `json:"tenant_licence,omitempty" gorm:"foreignKey:TenantID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	TenantLicence *TenantLicence `json:"tenant_licence,omitempty" gorm:"foreignKey:TenantID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

@@ -24,5 +24,5 @@ type User struct {
 	EmailVerificationToken          string     `json:"email_verification_token"`
 	EmailVerificationTokenExpiresAt *time.Time `json:"email_verification_token_expires_at"`
 
-	Tenant Tenant `json:"tenant" gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
+	Tenant Tenant `json:"tenant" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
