@@ -31,6 +31,18 @@ func (h *TenantHandler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// GetTenantByID godoc
+// @Summary Get tenant by ID
+// @Description Get tenant details by ID (requires authentication)
+// @Tags Tenant
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} frameworkdto.SuccessResponseDTO{data=frameworkdto.GetTenantDTO} "Tenant fetched successfully"
+// @Failure 401 {object} frameworkdto.ErrorResponseDTO "Unauthorized"
+// @Failure 403 {object} frameworkdto.ErrorResponseDTO "Not authorized to get this resource"
+// @Failure 500 {object} frameworkdto.ErrorResponseDTO "Internal server error"
+// @Router /tenant/get-by-id [get]
 func (h *TenantHandler) GetTenantByID(c *gin.Context) {
 	tokenDto, err := frameworkutils.GetTokenDTO(c)
 	if err != nil {
@@ -52,6 +64,18 @@ func (h *TenantHandler) GetTenantByID(c *gin.Context) {
 	frameworkutils.SuccessResponse(c, http.StatusOK, tenant, "Tenant fetched successfully")
 }
 
+// GetAllTenants godoc
+// @Summary Get all tenants
+// @Description Get list of all tenants (requires authentication, super admin only)
+// @Tags Tenant
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} frameworkdto.SuccessResponseDTO{data=[]frameworkdto.GetTenantDTO} "Tenants fetched successfully"
+// @Failure 401 {object} frameworkdto.ErrorResponseDTO "Unauthorized"
+// @Failure 403 {object} frameworkdto.ErrorResponseDTO "Not authorized to get this resource"
+// @Failure 500 {object} frameworkdto.ErrorResponseDTO "Internal server error"
+// @Router /tenant/get-all [get]
 func (h *TenantHandler) GetAllTenants(c *gin.Context) {
 	tokenDto, err := frameworkutils.GetTokenDTO(c)
 	if err != nil {
@@ -73,6 +97,20 @@ func (h *TenantHandler) GetAllTenants(c *gin.Context) {
 	frameworkutils.SuccessResponse(c, http.StatusOK, tenants, "Tenants fetched successfully")
 }
 
+// UpdateTenant godoc
+// @Summary Update tenant
+// @Description Update tenant details (requires authentication, authorized roles only)
+// @Tags Tenant
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param updateTenantDTO body frameworkdto.UpdateTenantDTO true "Tenant update details"
+// @Success 202 {object} frameworkdto.SuccessResponseDTO "Tenant updated successfully"
+// @Failure 400 {object} frameworkdto.ErrorResponseDTO "Invalid request body"
+// @Failure 401 {object} frameworkdto.ErrorResponseDTO "Unauthorized"
+// @Failure 403 {object} frameworkdto.ErrorResponseDTO "Not authorized to update tenant"
+// @Failure 500 {object} frameworkdto.ErrorResponseDTO "Internal server error"
+// @Router /tenant/update [put]
 func (h *TenantHandler) UpdateTenant(c *gin.Context) {
 	tokenDto, err := frameworkutils.GetTokenDTO(c)
 	if err != nil {
@@ -100,6 +138,18 @@ func (h *TenantHandler) UpdateTenant(c *gin.Context) {
 	frameworkutils.SuccessResponse(c, http.StatusAccepted, nil, "Tenant updated successfully")
 }
 
+// DeleteTenant godoc
+// @Summary Delete tenant
+// @Description Delete a tenant (requires authentication, authorized roles only)
+// @Tags Tenant
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 202 {object} frameworkdto.SuccessResponseDTO "Tenant deleted successfully"
+// @Failure 401 {object} frameworkdto.ErrorResponseDTO "Unauthorized"
+// @Failure 403 {object} frameworkdto.ErrorResponseDTO "Not authorized to delete tenant"
+// @Failure 500 {object} frameworkdto.ErrorResponseDTO "Internal server error"
+// @Router /tenant/delete [delete]
 func (h *TenantHandler) DeleteTenant(c *gin.Context) {
 	tokenDto, err := frameworkutils.GetTokenDTO(c)
 	if err != nil {

@@ -22,6 +22,18 @@ func (h *LoginHandlers) RegisterRoutes(router *gin.Engine) {
 	api.POST("/login", h.Login)
 }
 
+// Login godoc
+// @Summary User login
+// @Description Authenticate user with email and password, returns JWT token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param loginRequest body frameworkdto.LoginDTO true "Login credentials"
+// @Success 200 {object} frameworkdto.SuccessResponseDTO{data=frameworkdto.LoginResponseDTO} "Login successful"
+// @Failure 400 {object} frameworkdto.ErrorResponseDTO "Invalid request body"
+// @Failure 401 {object} frameworkdto.ErrorResponseDTO "Invalid credentials"
+// @Failure 500 {object} frameworkdto.ErrorResponseDTO "Internal server error"
+// @Router /authentication/login [post]
 func (h *LoginHandlers) Login(c *gin.Context) {
 	var loginRequest frameworkdto.LoginDTO
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {

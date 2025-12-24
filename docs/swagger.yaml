@@ -1,0 +1,954 @@
+basePath: /
+definitions:
+  frameworkdto.CreatedResponseDTO:
+    description: Created response structure
+    properties:
+      data: {}
+      message:
+        example: Resource created successfully
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  frameworkdto.ErrorDetailDTO:
+    description: Error detail structure
+    properties:
+      code:
+        example: ERR_001
+        type: string
+      details: {}
+      message:
+        example: An error occurred
+        type: string
+    type: object
+  frameworkdto.ErrorResponseDTO:
+    description: Error API response structure
+    properties:
+      error:
+        $ref: '#/definitions/frameworkdto.ErrorDetailDTO'
+      success:
+        example: false
+        type: boolean
+    type: object
+  frameworkdto.GetLicenceTypeDTO:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      max_seats:
+        type: integer
+      name:
+        type: string
+    type: object
+  frameworkdto.GetTenantDTO:
+    properties:
+      tenant_address:
+        type: string
+      tenant_email:
+        type: string
+      tenant_id:
+        type: integer
+      tenant_name:
+        type: string
+      tenant_phone:
+        type: string
+    type: object
+  frameworkdto.GetUserRoles:
+    properties:
+      role:
+        type: string
+    type: object
+  frameworkdto.GetUsersResponseDTO:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      is_active:
+        type: boolean
+      last_name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  frameworkdto.LicenceTypeCreateRequestDTO:
+    properties:
+      description:
+        type: string
+      max_seats:
+        type: integer
+      name:
+        type: string
+    type: object
+  frameworkdto.LicenceTypeUpdateRequestDTO:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      max_seats:
+        type: integer
+      name:
+        type: string
+    type: object
+  frameworkdto.LoginDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  frameworkdto.LoginResponseDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  frameworkdto.ResetPasswordDTO:
+    properties:
+      new_password:
+        type: string
+      reset_token:
+        type: string
+    type: object
+  frameworkdto.ResetPasswordRequestDTO:
+    properties:
+      email:
+        type: string
+    type: object
+  frameworkdto.SuccessResponseDTO:
+    description: Successful API response structure
+    properties:
+      data: {}
+      message:
+        example: Operation completed successfully
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  frameworkdto.TenantRegistrationDTO:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      licence_type_id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        properties:
+          email:
+            type: string
+          first_name:
+            type: string
+          last_name:
+            type: string
+          password:
+            type: string
+        type: object
+    type: object
+  frameworkdto.UpdateTenantDTO:
+    properties:
+      tenant_address:
+        type: string
+      tenant_email:
+        type: string
+      tenant_name:
+        type: string
+      tenant_phone:
+        type: string
+    type: object
+  frameworkdto.UserRegistrationDTO:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    type: object
+  frameworkdto.UserUpdateRequestDTO:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      is_active:
+        type: boolean
+      is_email_verified:
+        type: boolean
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  frameworkdto.VerifyEmailDTO:
+    properties:
+      tenant_id:
+        type: integer
+      token:
+        type: string
+      user_id:
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: support@geekible.com
+    name: API Support
+  description: |-
+    A comprehensive service framework API with multi-tenant support, user management, authentication, and authorization.
+
+    ## Authentication
+    Most endpoints require Bearer token authentication. Include the token in the Authorization header:
+    `Authorization: Bearer <your_jwt_token>`
+
+    ## Error Responses
+    All error responses follow a standard format with success, error code, and message fields.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Service Framework API
+  version: "1.0"
+paths:
+  /api/health:
+    get:
+      consumes:
+      - application/json
+      description: Check if the API is running and healthy
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service is healthy
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Health check
+      tags:
+      - Health
+  /authentication/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password, returns JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/frameworkdto.LoginResponseDTO'
+              type: object
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      summary: User login
+      tags:
+      - Authentication
+  /licence-type/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new licence type (requires authentication, super admin
+        only)
+      parameters:
+      - description: Licence type creation details
+        in: body
+        name: createLicenceTypeDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.LicenceTypeCreateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Licence type created successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.CreatedResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Create a new licence type
+      tags:
+      - Licence Type
+  /licence-type/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a licence type by ID (requires authentication, super admin
+        only)
+      parameters:
+      - description: Licence Type ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Licence type deleted successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: ID is required or Invalid ID
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Delete a licence type
+      tags:
+      - Licence Type
+  /licence-type/get-all:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all licence types (requires authentication, super admin
+        only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Licence types fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/frameworkdto.GetLicenceTypeDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all licence types
+      tags:
+      - Licence Type
+  /licence-type/get-by-id:
+    get:
+      consumes:
+      - application/json
+      description: Get a specific licence type by ID (requires authentication, super
+        admin only)
+      parameters:
+      - description: Licence Type ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Licence type fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/frameworkdto.GetLicenceTypeDTO'
+              type: object
+        "400":
+          description: ID is required or Invalid ID
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get licence type by ID
+      tags:
+      - Licence Type
+  /licence-type/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing licence type (requires authentication, super
+        admin only)
+      parameters:
+      - description: Licence type update details
+        in: body
+        name: dto
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.LicenceTypeUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Licence type updated successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Update a licence type
+      tags:
+      - Licence Type
+  /registration/tenant:
+    post:
+      consumes:
+      - application/json
+      description: Register a new tenant organization with an admin user
+      parameters:
+      - description: Tenant registration details
+        in: body
+        name: tenantDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.TenantRegistrationDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Tenant registered successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.CreatedResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "409":
+          description: Tenant already exists
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      summary: Register a new tenant
+      tags:
+      - Registration
+  /registration/user:
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to the authenticated tenant (requires authentication)
+      parameters:
+      - description: User registration details
+        in: body
+        name: userDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.UserRegistrationDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User added successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.CreatedResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Add a new user to tenant
+      tags:
+      - Registration
+  /tenant/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tenant (requires authentication, authorized roles only)
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Tenant deleted successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to delete tenant
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Delete tenant
+      tags:
+      - Tenant
+  /tenant/get-all:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all tenants (requires authentication, super admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tenants fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/frameworkdto.GetTenantDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to get this resource
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all tenants
+      tags:
+      - Tenant
+  /tenant/get-by-id:
+    get:
+      consumes:
+      - application/json
+      description: Get tenant details by ID (requires authentication)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tenant fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  $ref: '#/definitions/frameworkdto.GetTenantDTO'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to get this resource
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get tenant by ID
+      tags:
+      - Tenant
+  /tenant/update:
+    put:
+      consumes:
+      - application/json
+      description: Update tenant details (requires authentication, authorized roles
+        only)
+      parameters:
+      - description: Tenant update details
+        in: body
+        name: updateTenantDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.UpdateTenantDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Tenant updated successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to update tenant
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Update tenant
+      tags:
+      - Tenant
+  /user-maintenance/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset user password using the reset token received via email
+      parameters:
+      - description: Reset token and new password
+        in: body
+        name: resetPasswordDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.ResetPasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Password reset successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      summary: Reset password
+      tags:
+      - User Maintenance
+  /user-maintenance/reset-password-request:
+    post:
+      consumes:
+      - application/json
+      description: Request a password reset token to be sent to the user's email
+      parameters:
+      - description: Email address
+        in: body
+        name: resetPasswordRequestDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.ResetPasswordRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Reset password request sent successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      summary: Request password reset
+      tags:
+      - User Maintenance
+  /user-maintenance/user:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user from the tenant (requires authentication, tenant
+        admin only)
+      parameters:
+      - description: User ID to delete
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid User ID format or User ID is required
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: You cannot delete yourself or not authorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Delete a user
+      tags:
+      - User Maintenance
+    put:
+      consumes:
+      - application/json
+      description: Update user details (requires authentication, tenant admin or self)
+      parameters:
+      - description: User update details
+        in: body
+        name: updateUserDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.UserUpdateRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: User updated successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body or User ID format
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to update this user
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - User Maintenance
+  /user-maintenance/users/get-all:
+    get:
+      consumes:
+      - application/json
+      description: Get all users for the authenticated tenant (requires authentication,
+        tenant admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/frameworkdto.GetUsersResponseDTO'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to get all users
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - User Maintenance
+  /user-maintenance/users/get-roles:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all available user roles (requires authentication,
+        tenant admin only)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User roles fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/frameworkdto.GetUserRoles'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "403":
+          description: Not authorized to get this resource
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all user roles
+      tags:
+      - User Maintenance
+  /user-maintenance/verify-email:
+    post:
+      consumes:
+      - application/json
+      description: Verify user email address using the verification token sent via
+        email
+      parameters:
+      - description: Email verification details
+        in: body
+        name: verifyEmailDTO
+        required: true
+        schema:
+          $ref: '#/definitions/frameworkdto.VerifyEmailDTO'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Email verified successfully
+          schema:
+            $ref: '#/definitions/frameworkdto.SuccessResponseDTO'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/frameworkdto.ErrorResponseDTO'
+      summary: Verify email address
+      tags:
+      - User Maintenance
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
