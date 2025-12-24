@@ -90,7 +90,7 @@ func main() {
     // Configure the framework
     cfg := frameworkdto.FrameworkConfig{
         Environment: frameworkdto.EnvDev,
-        JWTSecret:   "your-super-secret-jwt-key-change-this-in-production",
+        JWTSecret:   "your-super-secret-jwt-key-change-this-in-production", // 256 bit
         DBType:      frameworkdto.DatabaseTypePostgreSQL,
         DbCfg: frameworkdto.DatabaseConfig{
             Host:     "localhost",
